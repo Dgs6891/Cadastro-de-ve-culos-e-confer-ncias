@@ -1,13 +1,12 @@
+    
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Veículos na Oficina</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
@@ -119,11 +118,16 @@
                 height: auto !important;
             }
         }
+
+        .compression-info {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Main Application Container -->
     <div id="app" class="container-app mx-auto">
         <header class="no-print bg-white shadow-lg rounded-xl p-4 mb-6 sticky top-0 z-10">
             <h1 class="text-2xl font-bold text-gray-800 flex items-center">
@@ -147,10 +151,10 @@
                     </button>
                 </div>
             </div>
-            <p id="user-info" class="text-xs mt-3 text-gray-400 truncate">Armazenamento Local</p>
+            <p id="user-info" class="text-xs mt-3 text-gray-400 truncate">Armazenamento Local | Veículos: <span id="vehicle-count">0</span></p>
+            <p id="storage-info" class="text-xs text-gray-500 mt-1"></p>
         </header>
 
-        <!-- Loading Indicator -->
         <div id="loading" class="text-center py-10 text-gray-500">
             <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -159,19 +163,15 @@
             <p class="mt-2">Carregando dados...</p>
         </div>
 
-        <!-- Vehicle List -->
         <div id="vehicle-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Vehicle cards will be injected here -->
-        </div>
+            </div>
 
-        <!-- Empty State -->
         <div id="empty-state" class="hidden text-center py-20 bg-white rounded-xl shadow-lg mt-6">
             <i data-lucide="car-off" class="w-12 h-12 mx-auto text-gray-400"></i>
             <p class="mt-4 text-gray-600 font-semibold">Nenhum veículo registrado.</p>
             <p class="text-sm text-gray-500">Clique em "Adicionar Veículo" para começar a conferência.</p>
         </div>
 
-        <!-- Report Section (Hidden, used for printing) -->
         <div id="report-section" class="hidden p-6">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">Relatório de Conferência de Veículos</h2>
             <div id="report-content"></div>
@@ -179,7 +179,6 @@
         </div>
     </div>
 
-    <!-- Modal for Adding/Editing Vehicle -->
     <div id="vehicle-modal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg modal-content">
             <div class="p-6">
@@ -189,12 +188,6 @@
                     <input type="hidden" id="rearPhotoBase64" value="">
                     <input type="hidden" id="keyPhotoBase64" value="">
                     
-                    <!-- Campo de arquivo oculto para Traseira -->
-                    <input type="file" id="rear-photo-input" accept="image/*" capture="environment" class="hidden">
-                    <!-- Campo de arquivo oculto para Chave -->
-                    <input type="file" id="key-photo-input" accept="image/*" capture="environment" class="hidden">
-
-                    <!-- Placa (License Plate) -->
                     <div class="mb-4">
                         <label for="plate" class="block text-sm font-medium text-gray-700">Placa (Mercosul/Antiga)</label>
                         <input type="text" id="plate" required maxlength="8"
@@ -203,12 +196,10 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <!-- Marca (Make) -->
                         <div class="mb-4">
                             <label for="make" class="block text-sm font-medium text-gray-700">Marca</label>
                             <input type="text" id="make" required class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500">
                         </div>
-                        <!-- Modelo (Model) -->
                         <div class="mb-4">
                             <label for="model" class="block text-sm font-medium text-gray-700">Modelo</label>
                             <input type="text" id="model" required class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500">
@@ -216,13 +207,11 @@
                     </div>
 
                     <div class="grid grid-cols-3 gap-4">
-                        <!-- Ano (Year) -->
                         <div class="mb-4 col-span-1">
                             <label for="year" class="block text-sm font-medium text-gray-700">Ano</label>
                             <input type="number" id="year" required min="1900" max="2099"
                                 class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500">
                         </div>
-                        <!-- Cor (Color) -->
                         <div class="mb-4 col-span-2">
                             <label for="color" class="block text-sm font-medium text-gray-700">Cor</label>
                             <input type="text" id="color" required
@@ -230,7 +219,6 @@
                         </div>
                     </div>
 
-                    <!-- Status -->
                     <div class="mb-4">
                         <label for="status" class="block text-sm font-medium text-gray-700">Status na Oficina</label>
                         <select id="status" required class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
@@ -241,10 +229,8 @@
                         </select>
                     </div>
 
-                    <!-- Fotos (Câmera) -->
-                    <p class="text-sm font-medium text-gray-700 mt-6 mb-2">Registro Fotográfico</p>
+                    <p class="text-sm font-medium text-gray-700 mt-6 mb-2">Registro Fotográfico <span class="text-xs text-gray-500">(Opcional)</span></p>
                     <div class="grid grid-cols-2 gap-4 mb-6">
-                        <!-- Foto da Traseira -->
                         <div>
                             <label class="block text-xs font-medium text-gray-500 mb-1">Foto da Traseira</label>
                             <div id="rear-photo-preview" class="img-placeholder mb-2 flex flex-col items-center justify-center">
@@ -254,8 +240,8 @@
                             <button type="button" onclick="triggerCamera('rear')" class="w-full flex items-center justify-center py-2 text-sm bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-lg shadow-md transition">
                                 <i data-lucide="camera" class="w-4 h-4 mr-1"></i> Capturar
                             </button>
+                            <div id="rear-photo-size" class="compression-info"></div>
                         </div>
-                        <!-- Foto da Chave -->
                         <div>
                             <label class="block text-xs font-medium text-gray-500 mb-1">Foto da Chave</label>
                             <div id="key-photo-preview" class="img-placeholder mb-2 flex flex-col items-center justify-center">
@@ -265,10 +251,10 @@
                             <button type="button" onclick="triggerCamera('key')" class="w-full flex items-center justify-center py-2 text-sm bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-lg shadow-md transition">
                                 <i data-lucide="key" class="w-4 h-4 mr-1"></i> Capturar
                             </button>
+                            <div id="key-photo-size" class="compression-info"></div>
                         </div>
                     </div>
 
-                    <!-- Submit/Cancel Buttons -->
                     <div class="flex justify-end space-x-3">
                         <button type="button" onclick="closeVehicleModal()" class="px-4 py-2 text-gray-600 bg-gray-200 hover:bg-gray-300 font-semibold rounded-lg transition">Cancelar</button>
                         <button type="submit" id="save-button" class="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 font-semibold rounded-lg transition shadow-md">Salvar Veículo</button>
@@ -278,8 +264,11 @@
             </div>
         </div>
     </div>
+    
+    <input type="file" id="rear-photo-input" accept="image/*" capture="environment" class="hidden">
+    <input type="file" id="key-photo-input" accept="image/*" capture="environment" class="hidden">
 
-    <!-- Confirmation Modal (Custom alert/confirm) -->
+
     <div id="confirm-modal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 text-center">
             <i data-lucide="alert-triangle" class="w-10 h-10 mx-auto text-red-500 mb-4"></i>
@@ -295,23 +284,116 @@
         // --- Variáveis Globais ---
         let vehiclesData = []; // Cache local dos dados dos veículos
         const STORAGE_KEY = 'gestao_oficina_veiculos';
+        const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limite máximo
+        const MAX_IMAGE_SIZE = 100 * 1024; // 100KB por imagem
 
         // --- Variáveis Globais de Input da Câmera ---
+        // Eles ainda são referenciados corretamente, apesar de estarem fora do form
         const rearPhotoInput = document.getElementById('rear-photo-input');
         const keyPhotoInput = document.getElementById('key-photo-input');
 
         // --- Funções de Local Storage ---
         
         /**
+         * Calcula o tamanho atual do armazenamento
+         */
+        const getCurrentStorageSize = () => {
+            try {
+                let totalSize = 0;
+                for (let key in localStorage) {
+                    if (localStorage.hasOwnProperty(key)) {
+                        totalSize += localStorage[key].length * 2; // UTF-16 characters
+                    }
+                }
+                return totalSize;
+            } catch (error) {
+                console.error('Erro ao calcular tamanho do storage:', error);
+                return 0;
+            }
+        };
+
+        /**
+         * Verifica se há espaço suficiente no armazenamento
+         */
+        const hasEnoughStorage = (additionalSize = 0) => {
+            const currentSize = getCurrentStorageSize();
+            return (currentSize + additionalSize) <= MAX_STORAGE_SIZE;
+        };
+
+        /**
          * Salva os veículos no Local Storage
          */
         const saveVehiclesToStorage = () => {
             try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(vehiclesData));
+                // Remove imagens muito antigas se necessário
+                if (!hasEnoughStorage()) {
+                    cleanupOldImages();
+                }
+
+                const dataToSave = JSON.stringify(vehiclesData);
+                
+                if (!hasEnoughStorage(dataToSave.length)) {
+                    throw new Error('Armazenamento insuficiente. Tente remover algumas imagens ou veículos antigos.');
+                }
+
+                localStorage.setItem(STORAGE_KEY, dataToSave);
+                updateStorageInfo();
                 return true;
             } catch (error) {
                 console.error('Erro ao salvar no Local Storage:', error);
                 return false;
+            }
+        };
+
+        /**
+         * Remove imagens de veículos antigos para liberar espaço
+         */
+        const cleanupOldImages = () => {
+            try {
+                // Ordena veículos por timestamp (mais antigos primeiro)
+                const sortedVehicles = [...vehiclesData].sort((a, b) => 
+                    new Date(a.timestamp) - new Date(b.timestamp)
+                );
+
+                // Remove imagens dos veículos mais antigos
+                for (let vehicle of sortedVehicles) {
+                    if (vehicle.rearPhotoBase64 || vehicle.keyPhotoBase64) {
+                        vehicle.rearPhotoBase64 = '';
+                        vehicle.keyPhotoBase64 = '';
+                        console.log('Imagens removidas do veículo:', vehicle.plate);
+                        
+                        // Verifica se já liberou espaço suficiente
+                        if (hasEnoughStorage()) {
+                            break;
+                        }
+                    }
+                }
+
+                // Salva as alterações
+                saveVehiclesToStorage();
+            } catch (error) {
+                console.error('Erro ao limpar imagens antigas:', error);
+            }
+        };
+
+        /**
+         * Atualiza informações de armazenamento na UI
+         */
+        const updateStorageInfo = () => {
+            try {
+                const currentSize = getCurrentStorageSize();
+                const percentage = (currentSize / MAX_STORAGE_SIZE) * 100;
+                const usedMB = (currentSize / 1024 / 1024).toFixed(2);
+                const maxMB = (MAX_STORAGE_SIZE / 1024 / 1024).toFixed(2);
+                
+                let color = 'text-green-500';
+                if (percentage > 80) color = 'text-red-500';
+                else if (percentage > 60) color = 'text-yellow-500';
+
+                document.getElementById('storage-info').innerHTML = 
+                    `Armazenamento: <span class="${color} font-semibold">${usedMB}MB / ${maxMB}MB (${percentage.toFixed(1)}%)</span>`;
+            } catch (error) {
+                console.error('Erro ao atualizar info de storage:', error);
             }
         };
 
@@ -322,14 +404,14 @@
             try {
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (stored) {
-                    vehiclesData = JSON.parse(stored);
+                    const parsed = JSON.parse(stored);
                     // Garante que cada veículo tenha um ID
-                    vehiclesData.forEach(vehicle => {
+                    parsed.forEach(vehicle => {
                         if (!vehicle.id) {
                             vehicle.id = generateId();
                         }
                     });
-                    return vehiclesData;
+                    return parsed;
                 }
                 return [];
             } catch (error) {
@@ -350,8 +432,14 @@
             // Carrega dados do Local Storage
             vehiclesData = loadVehiclesFromStorage();
             
+            // Atualiza contador de veículos
+            document.getElementById('vehicle-count').textContent = vehiclesData.length;
+            
             // Renderiza a lista de veículos
             renderVehicleList(vehiclesData);
+            
+            // Atualiza informações de armazenamento
+            updateStorageInfo();
             
             // Esconde o loading
             document.getElementById('loading').classList.add('hidden');
@@ -377,34 +465,19 @@
         };
 
         /**
-         * Converte a imagem capturada em Base64 e atualiza o preview/input hidden.
+         * Comprime imagem de forma mais agressiva
          */
-        const handleImageCapture = (event, base64InputId, previewId) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Verifica se o arquivo é uma imagem
-            if (!file.type.startsWith('image/')) {
-                alert('Por favor, selecione apenas imagens.');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64Data = reader.result;
-                
-                // Reduz a qualidade da imagem para evitar arquivos muito grandes
+        const compressImage = (base64Data, maxWidth = 400, maxHeight = 300, quality = 0.5) => {
+            return new Promise((resolve) => {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
-                    // Define tamanho máximo para a imagem
-                    const maxWidth = 800;
-                    const maxHeight = 600;
                     let width = img.width;
                     let height = img.height;
                     
+                    // Redimensiona mantendo a proporção
                     if (width > height) {
                         if (width > maxWidth) {
                             height = Math.round((height * maxWidth) / width);
@@ -419,22 +492,97 @@
                     
                     canvas.width = width;
                     canvas.height = height;
+                    
+                    // Aplica compressão
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Converte para base64 com qualidade reduzida
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    // Tenta diferentes qualidades até ficar abaixo do limite
+                    let compressedData = canvas.toDataURL('image/jpeg', quality);
                     
-                    document.getElementById(base64InputId).value = compressedBase64;
-                    const previewElement = document.getElementById(previewId);
-                    previewElement.innerHTML = `<img src="${compressedBase64}" class="w-full h-full object-cover rounded-lg" alt="Preview">`;
-                    previewElement.classList.remove('img-placeholder', 'bg-gray-200', 'text-gray-500');
+                    // Se ainda estiver muito grande, reduz mais a qualidade
+                    if (compressedData.length > MAX_IMAGE_SIZE) {
+                        compressedData = canvas.toDataURL('image/jpeg', 0.3);
+                    }
+                    
+                    // Se ainda estiver grande, reduz dimensões
+                    if (compressedData.length > MAX_IMAGE_SIZE) {
+                        canvas.width = Math.round(width * 0.7);
+                        canvas.height = Math.round(height * 0.7);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        compressedData = canvas.toDataURL('image/jpeg', 0.3);
+                    }
+                    
+                    resolve(compressedData);
                 };
                 img.src = base64Data;
+            });
+        };
+
+        /**
+         * Converte a imagem capturada em Base64 e atualiza o preview/input hidden.
+         */
+        const handleImageCapture = async (event, base64InputId, previewId, sizeInfoId) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Verifica se o arquivo é uma imagem
+            if (!file.type.startsWith('image/')) {
+                alert('Por favor, selecione apenas imagens.');
+                return;
+            }
+
+            // Verifica tamanho do arquivo original
+            if (file.size > 5 * 1024 * 1024) { // 5MB
+                alert('Imagem muito grande. Por favor, selecione uma imagem menor.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                try {
+                    const originalBase64 = reader.result;
+                    
+                    // Mostra loading
+                    const previewElement = document.getElementById(previewId);
+                    previewElement.innerHTML = `
+                        <div class="flex flex-col items-center justify-center">
+                            <svg class="animate-spin h-6 w-6 text-blue-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="text-xs">Comprimindo...</span>
+                        </div>
+                    `;
+
+                    // Comprime a imagem
+                    const compressedBase64 = await compressImage(originalBase64);
+                    
+                    // Atualiza informações de tamanho
+                    const sizeKB = Math.round(compressedBase64.length / 1024);
+                    document.getElementById(sizeInfoId).textContent = `${sizeKB}KB`;
+                    
+                    // Verifica se há espaço suficiente
+                    if (!hasEnoughStorage(compressedBase64.length)) {
+                        alert('Armazenamento insuficiente. A imagem não será salva. Tente remover algumas imagens antigas.');
+                        resetImageFields();
+                        return;
+                    }
+
+                    document.getElementById(base64InputId).value = compressedBase64;
+                    previewElement.innerHTML = `<img src="${compressedBase64}" class="w-full h-full object-cover rounded-lg" alt="Preview">`;
+                    previewElement.classList.remove('img-placeholder', 'bg-gray-200', 'text-gray-500');
+                    
+                } catch (error) {
+                    console.error('Erro ao processar imagem:', error);
+                    alert('Erro ao processar imagem. Tente novamente.');
+                    resetImageFields();
+                }
             };
             
             reader.onerror = () => {
                 console.error('Erro ao ler a imagem');
                 alert('Erro ao capturar a imagem. Tente novamente.');
+                resetImageFields();
             };
             
             reader.readAsDataURL(file);
@@ -455,6 +603,10 @@
             keyPreview.innerHTML = '<i data-lucide="key" class="w-6 h-6 mb-1"></i> Chave';
             keyPreview.className = 'img-placeholder mb-2 flex flex-col items-center justify-center bg-gray-200 text-gray-500 rounded-lg';
             
+            // Limpa informações de tamanho
+            document.getElementById('rear-photo-size').textContent = '';
+            document.getElementById('key-photo-size').textContent = '';
+            
             // Reseta os inputs de arquivo
             rearPhotoInput.value = '';
             keyPhotoInput.value = '';
@@ -463,14 +615,13 @@
         };
 
         // Adiciona listeners para os inputs de câmera
-        rearPhotoInput.addEventListener('change', (e) => handleImageCapture(e, 'rearPhotoBase64', 'rear-photo-preview'));
-        keyPhotoInput.addEventListener('change', (e) => handleImageCapture(e, 'keyPhotoBase64', 'key-photo-preview'));
+        rearPhotoInput.addEventListener('change', (e) => handleImageCapture(e, 'rearPhotoBase64', 'rear-photo-preview', 'rear-photo-size'));
+        keyPhotoInput.addEventListener('change', (e) => handleImageCapture(e, 'keyPhotoBase64', 'key-photo-preview', 'key-photo-size'));
 
         // --- CRUD e Lógica de Formulário ---
         
         /**
          * Abre o modal do veículo para adicionar ou editar.
-         * @param {Object} vehicle - Dados do veículo para edição, ou null para adicionar.
          */
         window.openVehicleModal = (vehicle = null) => {
             const modal = document.getElementById('vehicle-modal');
@@ -482,7 +633,7 @@
 
             form.reset();
             vehicleIdInput.value = '';
-            resetImageFields(); // Garante o reset das fotos
+            resetImageFields();
 
             if (vehicle) {
                 modalTitle.textContent = 'Editar Veículo';
@@ -500,11 +651,15 @@
                     document.getElementById('rearPhotoBase64').value = vehicle.rearPhotoBase64;
                     document.getElementById('rear-photo-preview').innerHTML = `<img src="${vehicle.rearPhotoBase64}" class="w-full h-full object-cover rounded-lg">`;
                     document.getElementById('rear-photo-preview').classList.remove('img-placeholder');
+                    const sizeKB = Math.round(vehicle.rearPhotoBase64.length / 1024);
+                    document.getElementById('rear-photo-size').textContent = `${sizeKB}KB`;
                 }
                 if (vehicle.keyPhotoBase64) {
                     document.getElementById('keyPhotoBase64').value = vehicle.keyPhotoBase64;
                     document.getElementById('key-photo-preview').innerHTML = `<img src="${vehicle.keyPhotoBase64}" class="w-full h-full object-cover rounded-lg">`;
                     document.getElementById('key-photo-preview').classList.remove('img-placeholder');
+                    const sizeKB = Math.round(vehicle.keyPhotoBase64.length / 1024);
+                    document.getElementById('key-photo-size').textContent = `${sizeKB}KB`;
                 }
 
             } else {
@@ -514,7 +669,7 @@
             }
 
             modal.classList.remove('hidden');
-            lucide.createIcons(); // Garante que os ícones do modal sejam renderizados
+            lucide.createIcons();
         };
 
         /**
@@ -535,7 +690,7 @@
 
             const id = document.getElementById('vehicle-id').value;
             const plateInput = document.getElementById('plate');
-            const plate = plateInput.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); // Limpa e coloca em maiúsculo
+            const plate = plateInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
             
             if (plate.length < 7) {
                  document.getElementById('error-message').textContent = 'Placa inválida. Mínimo de 7 caracteres (limpos).';
@@ -550,7 +705,6 @@
                 year: parseInt(document.getElementById('year').value),
                 color: document.getElementById('color').value.trim(),
                 status: document.getElementById('status').value,
-                // Armazenando Base64 (pode ser string vazia)
                 rearPhotoBase64: document.getElementById('rearPhotoBase64').value || '',
                 keyPhotoBase64: document.getElementById('keyPhotoBase64').value || '',
                 timestamp: new Date().toISOString()
@@ -563,26 +717,26 @@
 
             try {
                 if (id) {
-                    // Edição - encontra o índice do veículo
+                    // Edição
                     const index = vehiclesData.findIndex(v => v.id === id);
                     if (index !== -1) {
-                        // Mantém o ID original e atualiza os dados
                         vehicleData.id = id;
                         vehiclesData[index] = vehicleData;
                     }
                 } else {
-                    // Adição - cria novo veículo com ID
+                    // Adição
                     vehicleData.id = generateId();
-                    vehiclesData.unshift(vehicleData); // Adiciona no início
+                    vehiclesData.unshift(vehicleData);
                 }
                 
                 // Salva no Local Storage
                 const success = saveVehiclesToStorage();
                 if (!success) {
-                    throw new Error('Erro ao salvar no armazenamento local');
+                    throw new Error('Erro ao salvar no armazenamento local. Tente remover algumas imagens.');
                 }
                 
                 // Atualiza a UI
+                document.getElementById('vehicle-count').textContent = vehiclesData.length;
                 renderVehicleList(vehiclesData);
                 closeVehicleModal();
 
@@ -603,7 +757,6 @@
             const confirmModal = document.getElementById('confirm-modal');
             const confirmButton = document.getElementById('confirm-action-button');
             
-            // Define a função de exclusão no botão
             confirmButton.setAttribute('onclick', `deleteVehicle('${id}')`);
             document.getElementById('confirm-message').textContent = 'Tem certeza que deseja excluir este veículo? Esta ação é irreversível.';
             confirmModal.classList.remove('hidden');
@@ -620,19 +773,17 @@
          * Exclui um veículo do Local Storage.
          */
         window.deleteVehicle = (id) => {
-            closeConfirmModal(false); 
+            closeConfirmModal(false);
             
             try {
-                // Filtra o veículo a ser excluído
                 vehiclesData = vehiclesData.filter(v => v.id !== id);
                 
-                // Salva no Local Storage
                 const success = saveVehiclesToStorage();
                 if (!success) {
                     throw new Error('Erro ao salvar no armazenamento local');
                 }
                 
-                // Atualiza a UI
+                document.getElementById('vehicle-count').textContent = vehiclesData.length;
                 renderVehicleList(vehiclesData);
                 
             } catch (error) {
@@ -642,11 +793,6 @@
         };
 
         // --- Lógica da Placa ---
-
-        /**
-         * Aplica a máscara Mercosul/Antiga na placa.
-         * (AAA-0000 ou AAA-0A00)
-         */
         window.formatPlate = (input) => {
             let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
             let formattedValue = '';
@@ -664,11 +810,7 @@
             input.value = formattedValue;
         };
 
-        // --- Renderização da Lista e Componentes ---
-
-        /**
-         * Retorna o HTML para o bloco de imagem.
-         */
+        // --- Renderização da Lista ---
         const getImageBlock = (base64Data, label) => {
             if (base64Data) {
                 return `
@@ -690,11 +832,8 @@
                     </div>
                 `;
             }
-        }
+        };
 
-        /**
-         * Renderiza a lista de veículos na UI.
-         */
         const renderVehicleList = (vehicles) => {
             const listContainer = document.getElementById('vehicle-list');
             listContainer.innerHTML = '';
@@ -740,14 +879,10 @@
                 `;
                 listContainer.appendChild(card);
             });
-            lucide.createIcons(); // Garante que os ícones do card sejam renderizados
+            lucide.createIcons();
         };
 
         // --- Geração de Relatórios ---
-
-        /**
-         * Gera o relatório para PDF (print) ou WhatsApp (texto).
-         */
         window.generateReport = (type) => {
             if (vehiclesData.length === 0) {
                 alert('Nenhum veículo cadastrado para gerar relatório.');
@@ -804,7 +939,6 @@
             let listText = `🚗 *LISTA DE VEÍCULOS*\n\n`;
 
             vehiclesData.forEach((v, index) => {
-                // Formata a placa
                 const formattedPlate = v.plate.length > 3 ? 
                     `${v.plate.substring(0, 3)}-${v.plate.substring(3)}` : v.plate;
                 
@@ -817,12 +951,6 @@
                             </div>
                             <span class="status-pill status-${v.status.replace(/\s/g, '')}">${v.status}</span>
                         </div>
-                        ${v.rearPhotoBase64 ? `
-                            <div class="mt-2">
-                                <p class="text-xs text-gray-500 mb-1">Foto da Traseira:</p>
-                                <img src="${v.rearPhotoBase64}" class="w-32 h-24 object-cover rounded border" alt="Traseira do veículo">
-                            </div>
-                        ` : ''}
                     </div>
                 `;
                 
@@ -838,7 +966,6 @@
             reportContent.innerHTML = listHtml;
 
             if (type === 'pdf') {
-                // Prepara o relatório para impressão
                 const timestamp = new Date().toLocaleString('pt-BR', {
                     day: '2-digit',
                     month: '2-digit',
@@ -850,14 +977,10 @@
                 document.querySelector('#report-section h2').textContent = 
                     `Relatório de Veículos - ${timestamp}`;
                 
-                // Mostra a seção de relatório
                 reportSection.classList.remove('hidden');
                 
-                // Aguarda um momento para renderizar e então imprime
                 setTimeout(() => {
                     window.print();
-                    
-                    // Esconde novamente após a impressão
                     setTimeout(() => {
                         reportSection.classList.add('hidden');
                     }, 500);
